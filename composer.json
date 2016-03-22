@@ -1,0 +1,16 @@
+{
+    "name": "lightools/transaction-nesting",
+    "description": "Allows you to nest transactions with dibi database connection.",
+    "license": ["MIT"],
+    "require": {
+        "php": ">=5.4",
+        "dibi/dibi": ">=2.0.0"
+    },
+    "require-dev": {
+        "ext-sqlite3": "*",
+        "nette/tester": "1.*"
+    },
+    "autoload": {
+        "classmap": ["src/"]
+    }
+}
