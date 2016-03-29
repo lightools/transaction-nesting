@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Lightools\Tests;
 
 use Dibi\Connection;
 use Lightools\TransactionNesting\TransactionManager;
