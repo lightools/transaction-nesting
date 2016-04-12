@@ -74,7 +74,6 @@ class TransactionManager {
      */
     private $someTransactionRunning = FALSE;
 
-
     /**
      * Transactions in format: transactionId => (bool) started?
      * @var bool[]
