@@ -3,6 +3,7 @@
 namespace Lightools\Tests;
 
 use Dibi\Connection;
+use ErrorException;
 use Lightools\TransactionNesting\TransactionManager;
 use Tester\Assert;
 use Tester\Environment;
@@ -18,13 +19,23 @@ Environment::setup();
  */
 class TransactionManagerTest extends TestCase {
 
-    public function testNesting() {
+    /**
+     * @var Connection
+     */
+    private $connection;
 
-        $connection = new Connection(array(
+    protected function setUp() {
+        parent::setUp();
+
+        $this->connection = new Connection([
             'driver' => 'sqlite3',
-            'database' => sys_get_temp_dir() . '/transaction-manager-test.sq3',
-        ));
-        $manager = new TransactionManager($connection);
+            'database' => sys_get_temp_dir() . '/transaction-manager-test-' . uniqid() . '.sq3',
+        ]);
+        $this->connection->query('CREATE TABLE [test] ([id] INT)');
+    }
+
+    public function testNesting() {
+        $manager = new TransactionManager($this->connection);
 
         Assert::noError(function () use ($manager) {
             $manager->transactional(function () use ($manager) {
@@ -33,6 +44,29 @@ class TransactionManagerTest extends TestCase {
                 });
             });
         });
+    }
+
+    public function testCommit() {
+        $manager = new TransactionManager($this->connection);
+
+        $manager->transactional(function () {
+            $this->connection->insert('test', ['id' => 1])->execute();
+        });
+
+        Assert::truthy($this->connection->fetch('SELECT [id] FROM [test]'));
+    }
+
+    public function testRollback() {
+        $manager = new TransactionManager($this->connection);
+
+        Assert::exception(function () use ($manager) {
+            $manager->transactional(function () {
+                $this->connection->insert('test', ['id' => 1])->execute();
+                throw new ErrorException;
+            });
+        }, ErrorException::class);
+
+        Assert::falsey($this->connection->fetchSingle('SELECT [id] FROM [test]'));
     }
 
 }
