@@ -4,6 +4,7 @@ namespace Lightools\TransactionNesting;
 
 use DibiConnection;
 use DibiEvent;
+use Exception;
 use InvalidArgumentException;
 
 /**
