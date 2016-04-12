@@ -7,6 +7,7 @@
         "dibi/dibi": ">=2.0.0"
     },
     "require-dev": {
+        "php": ">=5.5",
         "ext-sqlite3": "*",
         "nette/tester": "1.*"
     },
